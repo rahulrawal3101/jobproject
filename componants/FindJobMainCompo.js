@@ -28,8 +28,9 @@ const FindJobMainCompo = () => {
     const [search, setSearch] = useState('')
     const [isLocation, setIsLocation] = useState('')
     const [jobsData, setJobsData] = useState([]);
+    const [apiData, setApiData] = useState([])
     const [isReverse, setReverse] = useState(false);
-    const [currentPage, setPage] = useState(1);
+    const [currentPage, setCurrentPage] = useState(1);
     const skelArr = new Array(5).fill(1);
 
     const [catList, setCatList] = useState(
@@ -52,21 +53,24 @@ const FindJobMainCompo = () => {
     const arrData = ['App', 'Administrative', 'Android', 'Wordpress', 'Design', 'React']
     // console.log(catList)
 
-    const fetchJobDetails = async () => {
-        try {
-            const getJobData = await axios.get('https://learnkoods-task.onrender.com/job_api/');
-            console.log(getJobData);
-            setJobsData(getJobData.data.results)
+    // const fetchJobDetails = async () => {
+    //     try {
+    //         const getJobData = await axios.get('https://learnkoods-task.onrender.com/job_api/');
+    //         console.log(getJobData);
+    //         setJobsData(getJobData.data.results)
+    //         setApiData(getJobData.data.results)
 
-        } catch (err) {
-            console.log(err)
-        }
-    };
+    //     } catch (err) {
+    //         console.log(err)
+    //     }
+    // };
+
     const fetchJobDetailsPage = async () => {
         setJobsData([]);
         try {
             const getJobData = await axios.get(`https://learnkoods-task.onrender.com/job_api/?page=${currentPage}`);
             setJobsData(getJobData.data.results)
+            setApiData(getJobData.data.results)
 
         } catch (err) {
             console.log(err)
@@ -78,10 +82,9 @@ const FindJobMainCompo = () => {
         }
     }, [currentPage])
 
-    useEffect(() => {
-        if (currentPage === 1) {        
-            fetchJobDetails();
-        }
+    useEffect(() => {     
+        fetchJobDetailsPage()
+        
     }, [currentPage])
 
     const fethFilterData = async () => {
@@ -90,13 +93,13 @@ const FindJobMainCompo = () => {
         });
         setJobsData(filterData);
         if (search.length < 1) {
-            if (currentPage === 1) { fetchJobDetails(); }
-            if (currentPage !== 1) { fetchJobDetailsPage(); }
+            setJobsData(apiData);
         }
     }
     useEffect(() => {
         fethFilterData()
     }, [search]);
+
 
     const fetchFilterLocData =async() => {
         const filterLocData = jobsData.filter((item) => {
@@ -104,8 +107,9 @@ const FindJobMainCompo = () => {
         });
         setJobsData(filterLocData);
         if (isLocation.length < 1) {
-            if (currentPage === 1) { fetchJobDetails(); }
-            if (currentPage !== 1) { fetchJobDetailsPage(); }
+            setJobsData(apiData);
+            // if (currentPage === 1) { fetchJobDetails(); }
+            // if (currentPage !== 1) { fetchJobDetailsPage(); }
         }
     };
     useEffect(() => {
@@ -126,6 +130,12 @@ const FindJobMainCompo = () => {
             setJobsData(prev => { return [...prev].reverse() })
             setReverse(true)
         }
+    };
+
+
+    const handleForwardClick=()=>{
+        setCurrentPage(prevPage => prevPage + 1);
+    
     }
     return (
         <>
@@ -159,10 +169,7 @@ const FindJobMainCompo = () => {
                                     <FormControl sx={{ bgcolor: 'white', mt: '15px' }} fullWidth>
                                         <InputLabel id="demo-controlled-open-select-label">Choose a category</InputLabel>
                                         <Select
-                                            // onChange={handleChange}
-
                                             label="Choose a category"
-                                        // 
                                         >
                                             <MenuItem value="">
                                                 <em>Choose a category</em>
@@ -171,9 +178,7 @@ const FindJobMainCompo = () => {
                                             {catList.map((category, index) => (
                                                 <MenuItem key={index} fullWidth >{category.name}</MenuItem>
                                             ))}
-                                            {/* <MenuItem value={ele}>{ele}</MenuItem> */}
-
-
+                                            
                                         </Select>
                                     </FormControl>
 
@@ -262,13 +267,11 @@ const FindJobMainCompo = () => {
                                         <Grid item xs={3}>
                                             {jobsData.length > 0 && <Typography sx={{ fontSize: '14px', color: 'grey' }}>Show  <span style={{ fontSize: '14px', color: 'grey', fontWeight: '700' }}> 5 </span> jobs </Typography>}
                                         </Grid>
-                                        <Grid item xs={2.5}>
+                                        <Grid item lg={2.7} md={4} sm={5} xs={7}>
                                             <FormControl fullWidth size='small'>
                                                 <InputLabel id="demo-simple-select-label">sort by (default)</InputLabel>
                                                 <Select
-                                                    // value={age}
                                                     label="sort by (default)"
-                                                // onChange={handleChange}
                                                 >
                                                     <MenuItem ><em>sort by (default)</em></MenuItem>
                                                     <MenuItem onClick={() => changeTime('defaultData')} value={'Newest'}>Newest</MenuItem>
@@ -358,8 +361,7 @@ const FindJobMainCompo = () => {
                                     <Grid container>
                                         <Grid item xs={12} sx={{ mt: '10px', display: 'flex', justifyContent: 'right', alignItems: 'center' }}>
                                             <Stack spacing={2}>
-                                                <Pagination page={currentPage}
-                                                    onChange={(e) => setPage(() => parseInt(e.target.innerText))} count={5} size="small" />
+                                                <Pagination page={currentPage} onNext={handleForwardClick} onChange={(e) => setCurrentPage(() => parseInt(e.target.innerText))} count={5} size="small" />
                                             </Stack>
                                         </Grid>
                                     </Grid>

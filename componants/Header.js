@@ -44,7 +44,7 @@ const Header = () => {
                                             <Typography sx={{ fontSize: '32px', fontWeight: 'bold', color: '#1967d2', fontFamily: 'sans-serif', cursor: 'pointer', textAlign: 'center' }}>LearnKoods</Typography>
                                         </Grid>
                                         <Grid item xs={3} sx={{ display: { lg: 'none', md: 'block', sm: 'block', xs: 'block' } }}>
-                                            <Box sx={{ border: '1px solid green', width: '170px', height: '50px' }}>
+                                            <Box sx={{width: '170px', height: '50px' }}>
                                                 <Image src={logo} style={{ width: '100%', height: '1005' }} />
 
                                             </Box>
