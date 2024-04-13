@@ -13,24 +13,39 @@ const LoginModal = ({ logOpen, setLogOpen }) => {
     setLogOpen(false)
   }
   const closeHandler = () => {
-    setLogOpen(false)
+    setLogOpen(false);
+    setLoader(false)
   }
   const handleForm = async (e) => {
-    e.preventDefault();
     setLoader(true)
-    const res = await axios.post(' https://learnkoods-task.onrender.com/login_api/', data)
-    if (res?.data?.message === 'Login successful.') {
-
-      alert(res.data.message)
-      setLogOpen(false);
-      localStorage.setItem('user_token', JSON.stringify(res.data.data.access))
-      localStorage.setItem('user_data', JSON.stringify({ user: res.data.data.username, email: res.data.data.email }))
-      setLoader(false)
-      setData({ username: '', password: '' });
-      window.location.reload()
+    e.preventDefault();
+    if (data.username && data.password) {
+      try{
+        const res = await axios.post(' https://learnkoods-task.onrender.com/login_api/', data)
+        if (res?.data?.message === 'Login successful.') {
+          alert(res.data.message)
+          setLogOpen(false);
+          localStorage.setItem('user_token', JSON.stringify(res.data.data.access))
+          localStorage.setItem('user_data', JSON.stringify({ user: res.data.data.username, email: res.data.data.email }))
+          setLoader(false)
+          setData({ username: '', password: '' });
+          window.location.reload()
+        } else {
+          alert("Not registered!!!");
+          alert(res.data.message);
+          setLoader(false)
+        }
+      }catch(err){
+        console.log(err);
+        alert("Not registered!!!");
+        setLoader(false)
+      }
+     
     } else {
-      alert("Not registered!!!")
+      alert('please fill all the required fields');
+      setLoader(false)
     }
+
 
   }
   return (
@@ -65,10 +80,10 @@ const LoginModal = ({ logOpen, setLogOpen }) => {
 
         </Grid>
         <Grid item xs={12} sx={{ p: '2px 10px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <Box sx={{ border: '1px solid lightgrey', width: '45%' }}></Box>
-            <Box sx={{ width: '10%' }} ><Typography sx={{ color: 'dimgray', fontSize: '14px', textAlign: 'center' }}>Or</Typography></Box>
-            <Box sx={{ border: '1px solid lightgrey', width: '45%' }}></Box>
-          </Grid>
+          <Box sx={{ border: '1px solid lightgrey', width: '45%' }}></Box>
+          <Box sx={{ width: '10%' }} ><Typography sx={{ color: 'dimgray', fontSize: '14px', textAlign: 'center' }}>Or</Typography></Box>
+          <Box sx={{ border: '1px solid lightgrey', width: '45%' }}></Box>
+        </Grid>
         <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: '15px 12px' }}>
           <Button sx={{ fontSize: '13px', border: '1px solid #3b5998', color: '#3b5998', p: '10px 25px', textTransform: 'capitalize', fontWeight: '600', '&:hover': { bgcolor: '#3b5998', color: 'white' } }}> <span style={{ textTransform: 'lowercase', marginRight: '20px', fontSize: '16px', fontWeight: 'bold' }}>f</span>Log In via Facebook</Button>
           <Button sx={{ fontSize: '13px', border: '1px solid #dc4d28', color: '#dc4d28', p: '10px 25px', textTransform: 'capitalize', fontWeight: '600', '&:hover': { bgcolor: ' #dc4d28', color: 'white' } }}><span style={{ marginRight: '20px', fontSize: '16px', fontWeight: 'bold' }}>G</span>Log In via Google</Button>

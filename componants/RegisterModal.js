@@ -16,7 +16,8 @@ const RegisterModal = ({ open, setOpen }) => {
     setOpen(false)
   }
   const closeHandler = () => {
-    setOpen(false)
+    setOpen(false);
+    setIsReg(false)
   }
 
   const goToLoginModal = () => {
@@ -26,16 +27,23 @@ const RegisterModal = ({ open, setOpen }) => {
   const handleForm = async (e) => {
     setIsReg(true)
     e.preventDefault();
-    const res = await axios.post('https://learnkoods-task.onrender.com/user_api/', data)
-    if (res?.data?.message === 'User Created Succefully') {
-      alert(res.data.message)
-      setOpen(false);
-      setLogOpen(true);
+    if(data.first_name && data.last_name && data.email && data.username && data.password ){
+      const res = await axios.post('https://learnkoods-task.onrender.com/user_api/', data)
+      if (res?.data?.message === 'User Created Succefully') {
+        alert(res.data.message)
+        setOpen(false);
+        setLogOpen(true);
+        setIsReg(false)
+        setData({ username: '', password: '', email: '', first_name: '', last_name: "" })
+      } else {
+        alert("Not registered!!!");
+        setIsReg(false)
+      }
+    }else{
+      alert('please fill all the required fields');
       setIsReg(false)
-      setData({ username: '', password: '', email: '', first_name: '', last_name: "" })
-    } else {
-      alert("Not registered!!!")
     }
+    
 
   }
   return (
