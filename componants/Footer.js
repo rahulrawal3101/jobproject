@@ -59,8 +59,8 @@ const Footer = () => {
                     justifyContent: 'space-around',
                     alignItems: 'flex-start',
                     pt: '100px',
-                    pb:'100px'
-                    
+                    pb: '100px'
+
                 }}
             >
                 <Grid item xs={2.8} >
@@ -96,7 +96,7 @@ const Footer = () => {
                                         opacity: hoveredIndex === index ? 1 : 0,
                                         cursor: 'pointer',
                                         transition: 'width 0.5s ease',
-                                        transitionDelay: hoveredIndex === index ? '0s' : '0s', 
+                                        transitionDelay: hoveredIndex === index ? '0s' : '0s',
                                     }}
                                 ></Box>
                                 <Typography sx={{ fontSize: '13px', color: hoveredIndex === index ? '#1967d2' : 'dimgray', ml: hoveredIndex === index ? '17px' : '2px', cursor: 'pointer' }}>{ele}</Typography>
@@ -131,7 +131,7 @@ const Footer = () => {
                                         opacity: hoveredIndex1 === index ? 1 : 0,
                                         cursor: 'pointer',
                                         transition: 'width 0.5s ease',
-                                        transitionDelay: hoveredIndex1 === index ? '0s' : '0s', 
+                                        transitionDelay: hoveredIndex1 === index ? '0s' : '0s',
                                     }}
                                 ></Box>
                                 <Typography sx={{ fontSize: '13px', color: hoveredIndex1 === index ? '#1967d2' : 'dimgray', ml: hoveredIndex1 === index ? '17px' : '2px' }}>{ele}</Typography>
@@ -166,7 +166,7 @@ const Footer = () => {
                                         opacity: hoveredIndex3 === index ? 1 : 0,
                                         cursor: 'pointer',
                                         transition: 'width 0.5s ease',
-                                        transitionDelay: hoveredIndex3 === index ? '0s' : '0s', 
+                                        transitionDelay: hoveredIndex3 === index ? '0s' : '0s',
                                     }}
                                 ></Box>
                                 <Typography sx={{ fontSize: '13px', color: hoveredIndex3 === index ? '#1967d2' : 'dimgray', ml: hoveredIndex3 === index ? '17px' : '2px' }}>{ele}</Typography>
@@ -201,7 +201,7 @@ const Footer = () => {
                                         opacity: hoveredIndex4 === index ? 1 : 0,
                                         cursor: 'pointer',
                                         transition: 'width 0.5s ease',
-                                        transitionDelay: hoveredIndex4 === index ? '0s' : '0s', 
+                                        transitionDelay: hoveredIndex4 === index ? '0s' : '0s',
                                     }}
                                 ></Box>
                                 <Typography sx={{ fontSize: '13px', color: hoveredIndex4 === index ? '#1967d2' : 'dimgray', ml: hoveredIndex4 === index ? '17px' : '2px' }}>{ele}</Typography>
@@ -211,17 +211,17 @@ const Footer = () => {
                 </Grid>
 
             </Grid>
-            <Grid container  sx={{ borderTop: '1px solid lightgrey', height: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <Grid container sx={{ borderTop: '1px solid lightgrey', height: '100px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <Grid item xs={11} >
                     <Grid container sx={{ justifyContent: 'space-between', alignItems: 'center' }}>
                         <Grid item xs={3}>
                             <Typography sx={{ fontSize: '13px', color: 'dimgray' }}>© {date} Learnkoods by Epic . All Right Reserved.</Typography>
                         </Grid>
-                        <Grid item xs={2} sx={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                       <FacebookIcon sx={{color:'dimgray','&:hover':{color:'#bb86fc'}}}fontSize='small'/>
-                       <TwitterIcon sx={{color:'dimgray','&:hover':{color:'#bb86fc'}}}fontSize='small'/>
-                       <InstagramIcon sx={{color:'dimgray','&:hover':{color:'#bb86fc'}}}fontSize='small'/>
-                       <LinkedInIcon sx={{color:'dimgray','&:hover':{color:'#bb86fc'}}}fontSize='small'/>
+                        <Grid item xs={2} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <FacebookIcon sx={{ color: 'dimgray', '&:hover': { color: '#bb86fc' } }} fontSize='small' />
+                            <TwitterIcon sx={{ color: 'dimgray', '&:hover': { color: '#bb86fc' } }} fontSize='small' />
+                            <InstagramIcon sx={{ color: 'dimgray', '&:hover': { color: '#bb86fc' } }} fontSize='small' />
+                            <LinkedInIcon sx={{ color: 'dimgray', '&:hover': { color: '#bb86fc' } }} fontSize='small' />
 
                         </Grid>
                     </Grid>

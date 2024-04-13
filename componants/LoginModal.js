@@ -1,13 +1,14 @@
 'use client'
-
 import { Box, Button, Grid, Modal, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import React, { useState } from 'react'
+import React, { useState } from 'react';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import axios from 'axios'
 
 const LoginModal = ({ logOpen, setLogOpen }) => {
   const [data, setData] = useState({ username: '', password: '' });
+  const [loader, setLoader] = useState(false)
   const handleClose = () => {
     setLogOpen(false)
   }
@@ -16,12 +17,15 @@ const LoginModal = ({ logOpen, setLogOpen }) => {
   }
   const handleForm = async (e) => {
     e.preventDefault();
+    setLoader(true)
     const res = await axios.post(' https://learnkoods-task.onrender.com/login_api/', data)
     if (res?.data?.message === 'Login successful.') {
+
       alert(res.data.message)
       setLogOpen(false);
       localStorage.setItem('user_token', JSON.stringify(res.data.data.access))
       localStorage.setItem('user_data', JSON.stringify({ user: res.data.data.username, email: res.data.data.email }))
+      setLoader(false)
       setData({ username: '', password: '' });
       window.location.reload()
     } else {
@@ -55,7 +59,10 @@ const LoginModal = ({ logOpen, setLogOpen }) => {
           <TextField type='password' value={data.password} onChange={(e) => setData(prev => { return { ...prev, password: e.target.value } })} placeholder='Password' sx={{ bgcolor: '#f0f5f7', mt: '5px' }} fullWidth />
         </Grid>
         <Grid item xs={12} sx={{ p: '15px 12px', mt: '20px' }}>
-          <Button onClick={handleForm} variant='contained' fullWidth sx={{ bgcolor: '#1967d2', color: 'white', fontSize: '17px', textTransform: 'capitalize', p: '10px' }}>Login</Button>
+          <Button onClick={handleForm} variant='contained' fullWidth sx={{ bgcolor: '#1967d2', color: 'white', fontSize: '17px', textTransform: 'capitalize', p: '10px' }}>
+            {loader ? <CircularProgress sx={{ color: 'white' }} /> : 'Login'}
+          </Button>
+
         </Grid>
         <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: '15px 12px' }}>
           <Button sx={{ fontSize: '13px', border: '1px solid #3b5998', color: '#3b5998', p: '10px 25px', textTransform: 'capitalize', fontWeight: '600', '&:hover': { bgcolor: '#3b5998', color: 'white' } }}> <span style={{ textTransform: 'lowercase', marginRight: '20px', fontSize: '16px', fontWeight: 'bold' }}>f</span>Log In via Facebook</Button>

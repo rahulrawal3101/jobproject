@@ -8,7 +8,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import Image from "next/image";
 import bg1 from '../assets/bg1.png';
-import img1 from '../assets/img1.png';
+import { formatDistanceToNow } from 'date-fns';
 import BookmarkBorderOutlinedIcon from '@mui/icons-material/BookmarkBorderOutlined';
 import BusinessCenterOutlinedIcon from '@mui/icons-material/BusinessCenterOutlined';
 // import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
@@ -31,39 +31,46 @@ const FindJobMainCompo = () => {
     const [apiData, setApiData] = useState([])
     const [isReverse, setReverse] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
+    const [isData, setIsData] = useState(false);
     const skelArr = new Array(5).fill(1);
-
-    const [catList, setCatList] = useState(
-        [
-            {
-                name: 'Residential'
-            },
-            {
-                name: 'Commercial'
-            },
-            {
-                name: 'Industrial'
-            },
-            {
-                name: 'Apartments'
-            }
-        ]
-    );
-
+    const [selectedValue, setSelectedValue] = useState('');
+    const [selectedOption, setSelectedOption] = useState('All');
+    const [selectedOptionExper, setSelectedOptionExper] = useState('All');
     const arrData = ['App', 'Administrative', 'Android', 'Wordpress', 'Design', 'React']
-    // console.log(catList)
 
-    // const fetchJobDetails = async () => {
-    //     try {
-    //         const getJobData = await axios.get('https://learnkoods-task.onrender.com/job_api/');
-    //         console.log(getJobData);
-    //         setJobsData(getJobData.data.results)
-    //         setApiData(getJobData.data.results)
+    const handleChangeExpe = (option) => {
+        setSelectedOptionExper(option);
+    };
+    const fethFilterDataByType = async (value) => {
+        setJobsData([]);
+        setIsData(false)
+        const getJobData = await axios.get(`https://learnkoods-task.onrender.com/job_api/?page=${currentPage}`);
+        const filterData = getJobData.data.results.filter((item) => {
+            return item.type.includes(value);
+        });
+        setJobsData(() => { return filterData });
+        setIsData(true)
+    }
+    const handleChangeJobType = (newValue) => {
+        if (selectedValue === newValue) {
+            setSelectedValue('');
+            fetchJobDetailsPage();
+        } else {
+            setSelectedValue(newValue);
+            fethFilterDataByType(newValue);
+        }
 
-    //     } catch (err) {
-    //         console.log(err)
-    //     }
-    // };
+    };
+    const handleChangeDatePosted = (option) => {
+        if (option === 'All') {
+            fetchJobDetailsPage()
+        }
+        setSelectedOption(option);
+        if (option !== 'All') {
+            setJobsData([]);
+            setIsData(true)
+        }
+    };
 
     const fetchJobDetailsPage = async () => {
         setJobsData([]);
@@ -82,9 +89,9 @@ const FindJobMainCompo = () => {
         }
     }, [currentPage])
 
-    useEffect(() => {     
+    useEffect(() => {
         fetchJobDetailsPage()
-        
+
     }, [currentPage])
 
     const fethFilterData = async () => {
@@ -101,15 +108,13 @@ const FindJobMainCompo = () => {
     }, [search]);
 
 
-    const fetchFilterLocData =async() => {
+    const fetchFilterLocData = async () => {
         const filterLocData = jobsData.filter((item) => {
             return item.location.toLowerCase().includes(isLocation.toLowerCase());
         });
         setJobsData(filterLocData);
         if (isLocation.length < 1) {
             setJobsData(apiData);
-            // if (currentPage === 1) { fetchJobDetails(); }
-            // if (currentPage !== 1) { fetchJobDetailsPage(); }
         }
     };
     useEffect(() => {
@@ -133,10 +138,7 @@ const FindJobMainCompo = () => {
     };
 
 
-    const handleForwardClick=()=>{
-        setCurrentPage(prevPage => prevPage + 1);
-    
-    }
+
     return (
         <>
             <Grid container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'flex-start', }}>
@@ -163,45 +165,113 @@ const FindJobMainCompo = () => {
 
                                 </Grid>
 
-                                <Grid item xs={12} sx={{ mt: '20px' }}>
-                                    <Typography sx={{ fontSize: '16px', fontWeight: '600' }}>Category</Typography>
 
-                                    <FormControl sx={{ bgcolor: 'white', mt: '15px' }} fullWidth>
-                                        <InputLabel id="demo-controlled-open-select-label">Choose a category</InputLabel>
-                                        <Select
-                                            label="Choose a category"
-                                        >
-                                            <MenuItem value="">
-                                                <em>Choose a category</em>
-                                            </MenuItem>
-
-                                            {catList.map((category, index) => (
-                                                <MenuItem key={index} fullWidth >{category.name}</MenuItem>
-                                            ))}
-                                            
-                                        </Select>
-                                    </FormControl>
-
-                                </Grid>
                                 <Grid item xs={12} sx={{ mt: '15px' }}>
                                     <Typography sx={{ fontSize: '16px', fontWeight: '600' }}>Job Type</Typography>
                                     <FormGroup sx={{ mt: '10px' }}>
-                                        <FormControlLabel control={<Switch size="small" />} label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Freelancer</Typography>} />
-                                        <FormControlLabel control={<Switch size="small" sx={{ mt: '7px', display: 'flex' }} />} label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Full Time</Typography>} />
-                                        <FormControlLabel control={<Switch size="small" sx={{ mt: '7px' }} />} label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Part Time</Typography>} />
-                                        <FormControlLabel control={<Switch size="small" sx={{ mt: '7px' }} />} label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Temporary</Typography>} />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    size="small"
+                                                    checked={selectedValue === 'Freelancer'}
+                                                    onChange={() => handleChangeJobType('Freelancer')}
+                                                />
+                                            }
+                                            label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Freelancer</Typography>}
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    size="small"
+                                                    checked={selectedValue === 'Full Time'}
+                                                    onChange={() => handleChangeJobType('Full Time')}
+                                                    sx={{ mt: '7px', display: 'flex' }}
+                                                />
+                                            }
+                                            label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Full Time</Typography>}
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    size="small"
+                                                    checked={selectedValue === 'Part Time'}
+                                                    onChange={() => handleChangeJobType('Part Time')}
+                                                    sx={{ mt: '7px' }}
+                                                />
+                                            }
+                                            label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Part Time</Typography>}
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    size="small"
+                                                    checked={selectedValue === 'Temporary'}
+                                                    onChange={() => handleChangeJobType('Temporary')}
+                                                    sx={{ mt: '7px' }}
+                                                />
+                                            }
+                                            label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Temporary</Typography>}
+                                        />
                                     </FormGroup>
 
                                 </Grid>
                                 <Grid item xs={12} sx={{ mt: '20px' }}>
                                     <Typography sx={{ fontSize: '16px', fontWeight: '600' }}>Date Posted</Typography>
                                     <FormGroup sx={{ mt: '10px' }}>
-                                        <FormControlLabel control={<Switch size="small" />} label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>All</Typography>} />
-                                        <FormControlLabel control={<Switch size="small" sx={{ mt: '7px' }} />} label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Last Hour</Typography>} />
-                                        <FormControlLabel control={<Switch size="small" sx={{ mt: '7px' }} />} label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Last 24 Hour</Typography>} />
-                                        <FormControlLabel control={<Switch size="small" sx={{ mt: '7px' }} />} label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Last 7 Days</Typography>} />
-                                        <FormControlLabel control={<Switch size="small" sx={{ mt: '7px' }} />} label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Last 30 Days</Typography>} />
-
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    size="small"
+                                                    checked={selectedOption === 'All'}
+                                                    onChange={() => handleChangeDatePosted('All')}
+                                                />
+                                            }
+                                            label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>All</Typography>}
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    size="small"
+                                                    checked={selectedOption === 'Last Hour'}
+                                                    onChange={() => handleChangeDatePosted('Last Hour')}
+                                                    sx={{ mt: '7px' }}
+                                                />
+                                            }
+                                            label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Last Hour</Typography>}
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    size="small"
+                                                    checked={selectedOption === 'Last 24 Hour'}
+                                                    onChange={() => handleChangeDatePosted('Last 24 Hour')}
+                                                    sx={{ mt: '7px' }}
+                                                />
+                                            }
+                                            label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Last 24 Hours</Typography>}
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    size="small"
+                                                    checked={selectedOption === 'Last 7 Days'}
+                                                    onChange={() => handleChangeDatePosted('Last 7 Days')}
+                                                    sx={{ mt: '7px' }}
+                                                />
+                                            }
+                                            label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Last 7 Days</Typography>}
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    size="small"
+                                                    checked={selectedOption === 'Last 30 Days'}
+                                                    onChange={() => handleChangeDatePosted('Last 30 Days')}
+                                                    sx={{ mt: '7px' }}
+                                                />
+                                            }
+                                            label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Last 30 Days</Typography>}
+                                        />
                                     </FormGroup>
 
                                 </Grid>
@@ -209,13 +279,92 @@ const FindJobMainCompo = () => {
                                 <Grid item xs={12} sx={{ mt: '20px' }}>
                                     <Typography sx={{ fontSize: '16px', fontWeight: '600' }}>Experience Level</Typography>
                                     <FormGroup sx={{ mt: '10px' }}>
-                                        <FormControlLabel control={<Switch size="small" />} label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Fresh</Typography>} />
-                                        <FormControlLabel control={<Switch size="small" sx={{ mt: '7px' }} />} label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>1 Year</Typography>} />
-                                        <FormControlLabel control={<Switch size="small" sx={{ mt: '7px' }} />} label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>2 Year</Typography>} />
-                                        <FormControlLabel control={<Switch size="small" sx={{ mt: '7px' }} />} label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>3 Year</Typography>} />
-                                        <FormControlLabel control={<Switch size="small" sx={{ mt: '7px' }} />} label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>4 Year</Typography>} />
-                                        <FormControlLabel control={<Switch size="small" sx={{ mt: '7px' }} />} label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>5 Year</Typography>} />
-
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    size="small"
+                                                    checked={selectedOptionExper === 'All'}
+                                                    onChange={() => handleChangeExpe('All')}
+                                                />
+                                            }
+                                            label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>All</Typography>}
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    size="small"
+                                                    checked={selectedOptionExper === 'Fresh'}
+                                                    onChange={() => handleChangeExpe('Fresh')}
+                                                />
+                                            }
+                                            label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>Fresh</Typography>}
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    size="small"
+                                                    checked={selectedOptionExper === '1-2 Years'}
+                                                    onChange={() => handleChangeExpe('1-2 Years')}
+                                                    sx={{ mt: '7px' }}
+                                                />
+                                            }
+                                            label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>1 Year</Typography>}
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    size="small"
+                                                    checked={selectedOptionExper === '2-3 Years'}
+                                                    onChange={() => handleChangeExpe('2-3 Years')}
+                                                    sx={{ mt: '7px' }}
+                                                />
+                                            }
+                                            label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>2 Year</Typography>}
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    size="small"
+                                                    checked={selectedOptionExper === '3-4 Years'}
+                                                    onChange={() => handleChangeExpe('3-4 Years')}
+                                                    sx={{ mt: '7px' }}
+                                                />
+                                            }
+                                            label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>3 Year</Typography>}
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    size="small"
+                                                    checked={selectedOptionExper === '4-5 Years'}
+                                                    onChange={() => handleChangeExpe('4-5 Years')}
+                                                    sx={{ mt: '7px' }}
+                                                />
+                                            }
+                                            label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>4 Year</Typography>}
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    size="small"
+                                                    checked={selectedOptionExper === '5-6 Year'}
+                                                    onChange={() => handleChangeExpe('5-6 Year')}
+                                                    sx={{ mt: '7px' }}
+                                                />
+                                            }
+                                            label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>5 Year</Typography>}
+                                        />
+                                        <FormControlLabel
+                                            control={
+                                                <Switch
+                                                    size="small"
+                                                    checked={selectedOptionExper === '6-7 Year'}
+                                                    onChange={() => handleChangeExpe('6-7 Year')}
+                                                    sx={{ mt: '7px' }}
+                                                />
+                                            }
+                                            label={<Typography sx={{ color: 'grey', fontSize: '14px' }}>above 5 Years</Typography>}
+                                        />
                                     </FormGroup>
 
                                 </Grid>
@@ -327,7 +476,7 @@ const FindJobMainCompo = () => {
 
                                                                                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                                                                                     <AccessTimeOutlinedIcon sx={{ color: 'dimgray', mr: '5px', fontSize: '23px', ml: '3px' }} />
-                                                                                    <Typography sx={{ fontSize: '14px', color: 'dimgray', mr: '10px' }}>11 hours ago</Typography>
+                                                                                    <Typography sx={{ fontSize: '14px', color: 'dimgray', mr: '10px' }}>{formatDistanceToNow(ele.created, { addSuffix: true })}</Typography>
                                                                                 </Box>
 
                                                                                 <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
@@ -361,7 +510,7 @@ const FindJobMainCompo = () => {
                                     <Grid container>
                                         <Grid item xs={12} sx={{ mt: '10px', display: 'flex', justifyContent: 'right', alignItems: 'center' }}>
                                             <Stack spacing={2}>
-                                                <Pagination page={currentPage} onNext={handleForwardClick} onChange={(e) => setCurrentPage(() => parseInt(e.target.innerText))} count={5} size="small" />
+                                                <Pagination page={currentPage} onChange={(e) => setCurrentPage(() => parseInt(e.target.innerText))} count={5} size="small" />
                                             </Stack>
                                         </Grid>
                                     </Grid>
