@@ -1,15 +1,17 @@
 'use client'
 import { Box, Button, Grid, Modal, TextField, Typography } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import LoginModal from './LoginModal';
 import { useRouter } from 'next/navigation';
-import axios from 'axios'
+import axios from 'axios';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const RegisterModal = ({ open, setOpen }) => {
   const [data, setData] = useState({ username: '', password: '', email: '', first_name: '', last_name: "" });
   const router = useRouter();
-  const [logOpen, setLogOpen] = useState(false)
+  const [logOpen, setLogOpen] = useState(false);
+  const [isReg,setIsReg] = useState(false)
   const handleClose = () => {
     setOpen(false)
   }
@@ -22,12 +24,14 @@ const RegisterModal = ({ open, setOpen }) => {
     setOpen(false)
   }
   const handleForm = async (e) => {
+    setIsReg(true)
     e.preventDefault();
     const res = await axios.post('https://learnkoods-task.onrender.com/user_api/', data)
     if (res?.data?.message === 'User Created Succefully') {
       alert(res.data.message)
       setOpen(false);
       setLogOpen(true);
+      setIsReg(false)
       setData({ username: '', password: '', email: '', first_name: '', last_name: "" })
     } else {
       alert("Not registered!!!")
@@ -72,7 +76,7 @@ const RegisterModal = ({ open, setOpen }) => {
             <TextField value={data.password} onChange={(e) => setData(prev => { return { ...prev, password: e.target.value } })} placeholder='Password' sx={{ bgcolor: '#f0f5f7', mt: '5px' }} type='password' fullWidth />
           </Grid>
           <Grid item xs={12} sx={{ p: '15px 12px', mt: '20px' }}>
-            <Button onClick={handleForm} variant='contained' fullWidth sx={{ bgcolor: '#1967d2', color: 'white', fontSize: '17px', textTransform: 'capitalize', p: '10px' }}>Register</Button>
+            <Button onClick={handleForm} variant='contained' fullWidth sx={{ bgcolor: '#1967d2', color: 'white', fontSize: '17px', textTransform: 'capitalize', p: '10px' }}> {isReg? <CircularProgress sx={{ color: 'white' }} />:'Register'}</Button>
           </Grid>
           <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: '20px' }}>
             <Typography sx={{ fontSize: '15px', color: 'grey' }}>Already have an account? <span style={{ color: 'grey', fontSize: '15px', fontWeight: 'bold', cursor: 'pointer' }} onClick={goToLoginModal}>LogIn</span></Typography>
