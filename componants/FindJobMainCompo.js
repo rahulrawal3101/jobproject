@@ -510,7 +510,7 @@ const FindJobMainCompo = () => {
                                     <Grid container>
                                         <Grid item xs={12} sx={{ mt: '10px', display: 'flex', justifyContent: 'right', alignItems: 'center' }}>
                                             <Stack spacing={2}>
-                                                <Pagination page={currentPage} onChange={(e) => setCurrentPage(() => parseInt(e.target.innerText))} count={5} size="small" />
+                                                <Pagination page={currentPage} hideNextButton={true} hidePrevButton={true} onChange={(e) => setCurrentPage(() => parseInt(e.target.innerText))} count={5} size="small" />
                                             </Stack>
                                         </Grid>
                                     </Grid>
