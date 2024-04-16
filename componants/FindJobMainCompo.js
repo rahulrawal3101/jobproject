@@ -29,7 +29,7 @@ const FindJobMainCompo = () => {
     const [isLocation, setIsLocation] = useState('')
     const [jobsData, setJobsData] = useState([]);
     const [apiData, setApiData] = useState([])
-    const [isReverse, setReverse] = useState(false);
+    const [check, setCheck] = useState('Default');
     const [currentPage, setCurrentPage] = useState(1);
     const [isData, setIsData] = useState(false);
     const skelArr = new Array(5).fill(1);
@@ -78,7 +78,7 @@ const FindJobMainCompo = () => {
             const getJobData = await axios.get(`https://learnkoods-task.onrender.com/job_api/?page=${currentPage}`);
             setJobsData(getJobData.data.results)
             setApiData(getJobData.data.results)
-
+            setCheck('Default')
         } catch (err) {
             console.log(err)
         }
@@ -87,6 +87,7 @@ const FindJobMainCompo = () => {
         if (currentPage > 1) {
             fetchJobDetailsPage()
         }
+        
     }, [currentPage])
 
     useEffect(() => {
@@ -121,23 +122,45 @@ const FindJobMainCompo = () => {
         fetchFilterLocData();
     }, [isLocation])
 
-
+    // const changeTime = (action) => {
+    //     if (action == "defaultData") {
+    //         if (isReverse) {
+    //             setJobsData(prev => { return [...prev].reverse() })
+    //             setReverse(false)
+    //         }
+    //     }
+    //     if (action == 'reverse') {
+    //         setJobsData(prev => { return [...prev].reverse() })
+    //         setReverse(true)
+    //     }
+    // };
 
     const changeTime = (action) => {
-        if (action == "defaultData") {
-            if (isReverse) {
-                setJobsData(prev => { return [...prev].reverse() })
-                setReverse(false)
-            }
-
+        console.log(action);
+        if(action == 'default'){
+            setJobsData(apiData); 
         }
-        if (action == 'reverse') {
-            setJobsData(prev => { return [...prev].reverse() })
-            setReverse(true)
+        if (action === 'defaultData') {
+            const sortedData = [...jobsData].sort((a, b) => {
+                const dateA = new Date(a.created);
+                const dateB = new Date(b.created);
+                return dateB - dateA;
+            });
+            setJobsData(sortedData);
+            
+        }
+        if (action === 'reverse') {
+            const sortedData = [...jobsData].sort((a, b) => {
+                const dateA = new Date(a.created);
+                const dateB = new Date(b.created);
+                return dateA - dateB; 
+            });
+            setJobsData(sortedData);
         }
     };
 
-
+  
+console.log(jobsData)
 
     return (
         <>
@@ -417,14 +440,15 @@ const FindJobMainCompo = () => {
                                             {jobsData.length > 0 && <Typography sx={{ fontSize: '14px', color: 'grey' }}>Show  <span style={{ fontSize: '14px', color: 'grey', fontWeight: '700' }}> 5 </span> jobs </Typography>}
                                         </Grid>
                                         <Grid item lg={2.7} md={4} sm={5} xs={7}>
-                                            <FormControl fullWidth size='small'>
-                                                <InputLabel id="demo-simple-select-label">sort by (default)</InputLabel>
+                                            <FormControl fullWidth size='small' sx={{color:'dimgray'}}>
+                                                <InputLabel id="demo-simple-select-label" sx={{color:'grey'}}>{`sort by ${check}`}</InputLabel>
                                                 <Select
-                                                    label="sort by (default)"
+                                                    label={`sort by ${check}`}
+                                                    value={check}
                                                 >
-                                                    <MenuItem ><em>sort by (default)</em></MenuItem>
-                                                    <MenuItem onClick={() => changeTime('defaultData')} value={'Newest'}>Newest</MenuItem>
-                                                    <MenuItem onClick={() => changeTime('reverse')} value={'Oldest'}>Oldest</MenuItem>
+                                                    <MenuItem  onClick={() => {changeTime('default'); setCheck('Default')}} value={'Default'}><em>Default</em></MenuItem>
+                                                    <MenuItem onClick={() => {changeTime('defaultData'); setCheck('Newest')}} value={'Newest'} >Newest</MenuItem>
+                                                    <MenuItem onClick={() => {changeTime('reverse'); setCheck('Oldest')}} value={'Oldest'}  >Oldest</MenuItem>
                                                 </Select>
                                             </FormControl>
                                         </Grid>
